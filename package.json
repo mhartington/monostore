@@ -17,7 +17,8 @@
     "typescript": "~5.7.2"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/react-store"
   ],
   "dependencies": {
     "react": "19.0.0",
