@@ -4,9 +4,11 @@
   "license": "MIT",
   "scripts": {},
   "private": true,
-  "dependencies": {},
   "devDependencies": {
+    "@nx/angular": "^21.0.3",
     "@nx/js": "21.0.3",
+    "@nx/node": "^21.0.3",
+    "@nx/react": "^21.0.3",
     "@swc-node/register": "~1.9.1",
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
@@ -16,5 +18,9 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  }
 }
