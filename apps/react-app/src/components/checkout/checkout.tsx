@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { checkout } from '../api';
+import { checkout } from '../../api';
 
 export default function Checkout() {
   const navigate = useNavigate();

@@ -1,8 +1,7 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, User } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { getCart } from '../api';
+import { getCart } from '../../api';
 
 export default function Navbar() {
   const { data: cartData } = useQuery({

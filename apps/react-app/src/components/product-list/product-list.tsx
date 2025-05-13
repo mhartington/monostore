@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
-import { getProducts } from '../api';
-import { Product } from '../types';
+import { getProducts } from '../../api';
+import { Product } from '../../types';
 
 export default function ProductList() {
   const [category, setCategory] = useState('');
@@ -11,12 +11,12 @@ export default function ProductList() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['products', category],
-    queryFn: () => getProducts(category)
+    queryFn: () => getProducts(category),
   });
 
   const products = data?.products || [];
   const filteredProducts = products.filter((product: Product) =>
-    product.name.toLowerCase().includes(search.toLowerCase())
+    product.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   if (isLoading) return <div>Loading...</div>;
@@ -28,6 +28,7 @@ export default function ProductList() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
           <input
             type="text"
+            autoComplete="false"
             placeholder="Search products..."
             className="w-full pl-10 pr-4 py-2 border rounded-lg"
             value={search}
@@ -59,9 +60,13 @@ export default function ProductList() {
               className="w-full h-48 object-cover rounded-t-lg"
             />
             <div className="p-4">
-              <h3 className="text-lg font-semibold text-gray-800">{product.name}</h3>
+              <h3 className="text-lg font-semibold text-gray-800">
+                {product.name}
+              </h3>
               <p className="text-gray-600 mt-1">${product.price.toFixed(2)}</p>
-              <p className="text-sm text-gray-500 mt-2">{product.description.slice(0, 100)}...</p>
+              <p className="text-sm text-gray-500 mt-2">
+                {product.description.slice(0, 100)}...
+              </p>
             </div>
           </Link>
         ))}

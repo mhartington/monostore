@@ -17,9 +17,10 @@ export async function getProduct(id: string) {
 }
 
 export async function getCart() {
+  const token = localStorage.getItem('token')
   const response = await fetch(`${API_URL}/cart`, {
     headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
+      'Authorization': `Bearer ${token}`
     }
   });
   if (!response.ok) throw new Error('Failed to fetch cart');
@@ -76,16 +77,15 @@ export async function login(email: string, password: string) {
 }
 
 export async function checkout(shippingAddress: any) {
+  const body = JSON.stringify({ shippingAddress: shippingAddress, paymentMethod: 'credit_card' })
+  console.log(body)
   const response = await fetch(`${API_URL}/orders`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${localStorage.getItem('token')}`
     },
-    body: JSON.stringify({
-      shipping_address: shippingAddress,
-      payment_method: 'credit_card'
-    })
+    body
   });
   if (!response.ok) throw new Error('Failed to create order');
   return response.json();

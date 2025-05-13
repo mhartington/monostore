@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Minus, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getProduct, addToCart } from '../api';
+import { getProduct, addToCart } from '../../api';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(1);
-
   const { data, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: () => getProduct(id)
