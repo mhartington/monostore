@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
-import { getProducts } from '../api';
-import { Product } from '../types';
+import { getProducts } from '../../api';
+import { Product } from '../../types';
 
 export default function ProductList() {
   const [category, setCategory] = useState('');
