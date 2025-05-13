@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
@@ -28,7 +28,7 @@ export default function ProductList() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-5 w-5" />
           <input
             type="text"
-            autoComplete='false'
+            autoComplete="false"
             placeholder="Search products..."
             className="w-full pl-10 pr-4 py-2 border rounded-lg"
             value={search}

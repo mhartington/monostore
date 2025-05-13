@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { carts, products } from '../data';
 
 import { auth } from '../middleware/auth';
+import { validate, cartItemSchema } from '../utils/validators';
 
 type Variables = {
   user: {
@@ -34,7 +35,7 @@ app.get('/', auth, (c) => {
 });
 
 // Add item to cart
-app.post('/items', auth, (c) => {
+app.post('/items', auth, validate(cartItemSchema), (c) => {
   const { id: userId } = c.get('user');
   const { productId, quantity } = c.get('body');
 

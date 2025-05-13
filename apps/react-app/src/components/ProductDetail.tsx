@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Minus, Plus } from 'lucide-react';
@@ -10,7 +10,6 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [quantity, setQuantity] = useState(1);
-
   const { data, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: () => getProduct(id)

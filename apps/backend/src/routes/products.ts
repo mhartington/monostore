@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { products, generateId, Product } from '../data/index';
 import { auth, adminOnly } from '../middleware/auth';
+import { validate, productSchema } from '../utils/validators';
 type Variables = {
   body: Product
 }
@@ -45,7 +46,7 @@ app.get('/:id', (c) => {
 });
 
 // Create new product (admin only)
-app.post('/', auth, adminOnly,(c) => {
+app.post('/', auth, adminOnly, validate(productSchema), (c) => {
   const body = c.get('body');
   
   const newProduct = {
@@ -63,7 +64,7 @@ app.post('/', auth, adminOnly,(c) => {
 });
 
 // Update product (admin only)
-app.put('/:id', auth, adminOnly,(c) => {
+app.put('/:id', auth, adminOnly, validate(productSchema), (c) => {
   const id = c.req.param('id');
   const body = c.get('body');
   

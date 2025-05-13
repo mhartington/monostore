@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 
-
 import productRoutes from './routes/products';
 import userRoutes from './routes/users';
 import cartRoutes from './routes/cart';

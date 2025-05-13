@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { orders, carts, products, generateId, User } from '../data';
 import { auth } from '../middleware/auth';
+import { validate, orderSchema } from '../utils/validators';
 
 type Variables = {
   user : User,
@@ -36,7 +37,7 @@ app.get('/:id', auth, (c) => {
 });
 
 // Create new order
-app.post('/', auth,  async (c) => {
+app.post('/', auth, validate(orderSchema), async (c) => {
   const { id: userId } = c.get('user');
   const { shipping_address, payment_method } = c.get('body');
   
