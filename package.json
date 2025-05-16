@@ -18,11 +18,11 @@
     "tailwindcss": "^4.1.6"
   },
   "devDependencies": {
-    "@nx/angular": "^21.0.3",
+    "@nx/angular": "21.0.3",
     "@nx/esbuild": "21.0.3",
     "@nx/js": "21.0.3",
-    "@nx/node": "^21.0.3",
-    "@nx/react": "^21.0.3",
+    "@nx/node": "21.0.3",
+    "@nx/react": "21.0.3",
     "@nx/vite": "21.0.3",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20.0.0",

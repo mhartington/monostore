@@ -3,11 +3,6 @@
   "version": "0.0.1",
   "private": true,
   "nx": {
-    "name": "react-app",
-      "targets": {
-      "dev": {
-        "dependsOn": [{ "projects": ["backend"], "target": "serve" }]
-      }
-    }
+    "name": "react-app"
   }
 }
