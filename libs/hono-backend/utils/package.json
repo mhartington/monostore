@@ -15,9 +15,6 @@
       "default": "./dist/index.js"
     }
   },
-  "nx": {
-    "name": "HonoBackendUtils"
-  },
   "dependencies": {
     "tslib": "^2.3.0"
   }
