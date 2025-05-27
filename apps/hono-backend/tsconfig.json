@@ -4,6 +4,9 @@
   "include": [],
   "references": [
     {
+      "path": "../../libs/hono-backend/routes"
+    },
+    {
       "path": "./tsconfig.app.json"
     }
   ]

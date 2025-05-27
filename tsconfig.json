@@ -7,7 +7,19 @@
       "path": "./apps/react-app"
     },
     {
-      "path": "./apps/backend"
+      "path": "./libs/hono-backend/model"
+    },
+    {
+      "path": "./libs/hono-backend/routes"
+    },
+    {
+      "path": "./libs/hono-backend/middleware"
+    },
+    {
+      "path": "./libs/hono-backend/utils"
+    },
+    {
+      "path": "./apps/hono-backend"
     }
   ]
 }

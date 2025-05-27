@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
-import { users, generateId, User } from '../data/index.js';
-import { generateToken, auth } from '../middleware/auth.js';
-import { validate, registerSchema, loginSchema } from '../utils/validators.js';
+import { users, generateId, User } from '@monostore/backend-model';
+import { generateToken, auth } from '@monostore/backend-middleware';
+import { validate, registerSchema, loginSchema } from '@monostore/backend-utils';
 
 type Variables = {
   user: User,
@@ -86,4 +86,4 @@ app.get('/profile', auth, (c) => {
   return c.json({ user: userWithoutPassword });
 });
 
-export default app;
+export {app as usersRoute};

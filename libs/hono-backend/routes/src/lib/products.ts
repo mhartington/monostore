@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
-import { products, generateId, Product } from '../data/index.js';
-import { auth, adminOnly } from '../middleware/auth.js';
-import { validate, productSchema } from '../utils/validators.js';
+import { products, generateId, Product } from '@monostore/backend-model';
+import { auth, adminOnly } from '@monostore/backend-middleware';
+import { validate, productSchema } from '@monostore/backend-utils';
+
 type Variables = {
   body: Product
 }
@@ -50,8 +51,8 @@ app.post('/', auth, adminOnly, validate(productSchema), (c) => {
   const body = c.get('body');
   
   const newProduct = {
-    id: generateId(),
     ...body,
+    id: generateId(),
     created_at: new Date().toISOString()
   };
   
@@ -103,4 +104,4 @@ app.delete('/:id', auth, adminOnly, (c) => {
   });
 });
 
-export default app;
+export {app as productsRoute};

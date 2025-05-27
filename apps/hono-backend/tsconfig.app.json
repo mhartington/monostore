@@ -12,5 +12,10 @@
     "src/**/*.ts",
     "src/**/*.mts"
 ],
-  "exclude": []
+  "exclude": [],
+  "references": [
+    {
+      "path": "../../libs/hono-backend/routes/tsconfig.lib.json"
+    }
+  ]
 }

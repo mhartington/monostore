@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "nx": {
-    "name": "backend",
+    "name": "hono-backend",
     "targets": {
       "build": {
         "executor": "@nx/esbuild:esbuild",
@@ -14,15 +14,15 @@
         "defaultConfiguration": "production",
         "options": {
           "platform": "node",
-          "outputPath": "apps/backend/dist",
+          "outputPath": "apps/hono-backend/dist",
           "format": [
             "esm"
           ],
           "bundle": false,
-          "main": "apps/backend/src/main.ts",
-          "tsConfig": "apps/backend/tsconfig.app.json",
+          "main": "apps/hono-backend/src/main.ts",
+          "tsConfig": "apps/hono-backend/tsconfig.app.json",
           "assets": [
-            "apps/backend/src/assets"
+            "apps/hono-backend/src/assets"
           ],
           "esbuildOptions": {
             "sourcemap": true,
@@ -43,7 +43,7 @@
           }
         }
       },
-      "serve": {
+      "dev": {
         "continuous": true,
         "executor": "@nx/js:node",
         "defaultConfiguration": "development",
@@ -51,15 +51,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "backend:build",
+          "buildTarget": "hono-backend:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "backend:build:development"
+            "buildTarget": "hono-backend:build:development"
           },
           "production": {
-            "buildTarget": "backend:build:production"
+            "buildTarget": "hono-backend:build:production"
           }
         }
       }

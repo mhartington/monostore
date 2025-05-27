@@ -1,0 +1,19 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "../utils"
+    },
+    {
+      "path": "../middleware"
+    },
+    {
+      "path": "../model"
+    },
+    {
+      "path": "./tsconfig.lib.json"
+    }
+  ]
+}

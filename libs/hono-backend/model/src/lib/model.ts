@@ -102,8 +102,8 @@ export type Order = {
   user_id: string;
   items: Array<CartItem>;
   total: number;
-  shipping_address: string;
-  payment_method: string;
+  shippingAddress: string;
+  paymentMethod: string;
   status: string;
   created_at: string;
   cancelled_at?: string;

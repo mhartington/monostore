@@ -1,8 +1,8 @@
 import { Hono } from 'hono';
-import { carts, products } from '../data/index.js';
+import { carts, products } from '@monostore/backend-model';
 
-import { auth } from '../middleware/auth.js';
-import { validate, cartItemSchema } from '../utils/validators.js';
+import { auth } from '@monostore/backend-middleware';
+import { validate, cartItemSchema } from '@monostore/backend-utils';
 
 type Variables = {
   user: {
@@ -114,7 +114,7 @@ app.put('/items/:productId', auth, async (c) => {
 
   const product = products.find((p) => p.id === productId);
 
-  if (quantity > product.stock) {
+  if (quantity > product!.stock) {
     return c.json({ error: 'Not enough stock available' }, 400);
   }
 
@@ -179,4 +179,4 @@ app.delete('/', auth, (c) => {
   });
 });
 
-export default app;
+export { app as cartRoute };

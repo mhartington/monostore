@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { User } from '../data/index.js';
+import { User } from '@monostore/backend-model'; // Adjust the import path as necessary
 import {createMiddleware} from 'hono/factory';
 
 // JWT secret (in production, this would be in environment variables)

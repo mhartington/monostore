@@ -31,14 +31,14 @@ export const cartItemSchema = z.object({
 
 // Order validators
 export const orderSchema = z.object({
-  shipping_address: z.object({
+  shippingAddress: z.object({
     street: z.string(),
     city: z.string(),
     state: z.string(),
     country: z.string(),
     zip: z.string()
   }),
-  payment_method: z.string()
+  paymentMethod: z.string()
 });
 
 // Validation middleware factory
