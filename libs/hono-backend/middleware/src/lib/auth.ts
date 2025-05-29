@@ -13,7 +13,7 @@ export function generateToken(user: User) {
     role: user.role
   };
   
-  return wt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
 }
 
 // Auth middleware
