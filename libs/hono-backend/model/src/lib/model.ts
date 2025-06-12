@@ -14,10 +14,10 @@ export const products: Array<Product> = [
     id: '1',
     name: 'Premium Wireless Headphones',
     description: 'High-quality wireless headphones with noise cancellation',
-    price: 199.99,
+    price: 299.99,
     image: 'https://images.pexels.com/photos/3394651/pexels-photo-3394651.jpeg',
     category: 'electronics',
-    stock: 45,
+    stock: 50,
     created_at: new Date().toISOString(),
   },
   {
