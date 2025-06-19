@@ -1,7 +1,6 @@
 import { Hono } from 'hono';
 import { carts, products } from '@monostore/backend-model';
-
-import { auth } from '@monostore/backend-middleware';
+import { auth, session } from '@monostore/backend-middleware';
 import { validate, cartItemSchema } from '@monostore/backend-utils';
 
 type Variables = {
@@ -16,6 +15,9 @@ type Variables = {
 
 const app = new Hono<{ Variables: Variables }>();
 
+// Apply session middleware to all cart routes
+app.use('*', session);
+
 // Initialize cart if it doesn't exist
 function initializeCart(userId: string | number) {
   if (!carts[userId]) {
@@ -29,67 +31,79 @@ function initializeCart(userId: string | number) {
 
 // Get cart
 app.get('/', auth, (c) => {
-  const { id: userId } = c.get('user');
-  const cart = initializeCart(userId);
-  return c.json({ cart });
+  try {
+    const { id: userId } = c.get('user');
+    console.log('Getting cart for user:', userId);
+    const cart = initializeCart(userId);
+    return c.json({ cart });
+  } catch (error) {
+    console.error('Error getting cart:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
 });
 
 // Add item to cart
 app.post('/items', auth, validate(cartItemSchema), (c) => {
-  const { id: userId } = c.get('user');
-  const { productId, quantity } = c.get('body');
+  try {
+    const { id: userId } = c.get('user');
+    const { productId, quantity } = c.get('body');
+    console.log('Adding item to cart:', { userId, productId, quantity });
 
-  // Find product
-  const product = products.find((p) => p.id === productId);
+    // Find product
+    const product = products.find((p) => p.id === productId);
 
-  if (!product) {
-    return c.json({ error: 'Product not found' }, 404);
-  }
+    if (!product) {
+      return c.json({ error: 'Product not found' }, 404);
+    }
 
-  if (quantity > product.stock) {
-    return c.json({ error: 'Not enough stock available' }, 400);
-  }
-
-  const cart = initializeCart(userId);
-
-  // Check if product already in cart
-  const existingItem = cart.items.find(
-    (item: { product: { id: any } }) => item.product.id === productId,
-  );
-
-  if (existingItem) {
-    // Ensure the new quantity doesn't exceed stock
-    const newQuantity = existingItem.quantity + quantity;
-
-    if (newQuantity > product.stock) {
+    if (quantity > product.stock) {
       return c.json({ error: 'Not enough stock available' }, 400);
     }
 
-    existingItem.quantity = newQuantity;
-    existingItem.subtotal = newQuantity * product.price;
-  } else {
-    // Add new item
-    cart.items.push({
-      product: {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-      },
-      quantity,
-      subtotal: quantity * product.price,
-    });
-  }
-  // Recalculate cart total
-  cart.total = cart.items.reduce(
-    (sum: any, item: { subtotal: any }) => sum + item.subtotal,
-    0,
-  );
+    const cart = initializeCart(userId);
 
-  return c.json({
-    message: 'Item added to cart',
-    cart,
-  });
+    // Check if product already in cart
+    const existingItem = cart.items.find(
+      (item: { product: { id: any } }) => item.product.id === productId,
+    );
+
+    if (existingItem) {
+      // Ensure the new quantity doesn't exceed stock
+      const newQuantity = existingItem.quantity + quantity;
+
+      if (newQuantity > product.stock) {
+        return c.json({ error: 'Not enough stock available' }, 400);
+      }
+
+      existingItem.quantity = newQuantity;
+      existingItem.subtotal = newQuantity * product.price;
+    } else {
+      // Add new item
+      cart.items.push({
+        product: {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+        },
+        quantity,
+        subtotal: quantity * product.price,
+      });
+    }
+    // Recalculate cart total
+    cart.total = cart.items.reduce(
+      (sum: any, item: { subtotal: any }) => sum + item.subtotal,
+      0,
+    );
+
+    return c.json({
+      message: 'Item added to cart',
+      cart,
+    });
+  } catch (error) {
+    console.error('Error adding item to cart:', error);
+    return c.json({ error: 'Internal server error' }, 500);
+  }
 });
 
 // Update cart item

@@ -6,7 +6,7 @@ import {
   generateId,
   User,
 } from '@monostore/backend-model';
-import { auth } from '@monostore/backend-middleware';
+import { auth, session } from '@monostore/backend-middleware';
 import { validate, orderSchema } from '@monostore/backend-utils';
 
 type Variables = {
@@ -18,6 +18,9 @@ type Variables = {
 };
 
 const app = new Hono<{ Variables: Variables }>();
+
+// Apply session middleware to all order routes
+app.use('*', session);
 
 // Get user orders
 app.get('/', auth, (c) => {

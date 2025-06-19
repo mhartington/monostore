@@ -3,15 +3,19 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getCart, updateCartItem, removeFromCart } from '../../api';
+import { useAuth } from '../../context/auth-context';
 
 export default function Cart() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching } = useQuery({
     queryKey: ['cart'],
     queryFn: getCart,
-    enabled: !!localStorage.getItem('token')
+    enabled: isAuthenticated,
+    staleTime: 0,
+    refetchOnMount: true
   });
 
   const updateItemMutation = useMutation({
@@ -36,7 +40,9 @@ export default function Cart() {
     }
   });
 
-  if (!localStorage.getItem('token')) {
+  if (authLoading || isLoading || isFetching) return <div>Loading...</div>;
+
+  if (!isAuthenticated) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-semibold mb-4">Please login to view your cart</h2>
@@ -46,8 +52,6 @@ export default function Cart() {
       </div>
     );
   }
-
-  if (isLoading) return <div>Loading...</div>;
 
   const cart = data?.cart;
   if (!cart || cart.items.length === 0) {

@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { HTTPException } from 'hono/http-exception';
+import { session } from '@monostore/backend-middleware';
 
 import {
   productsRoute,
@@ -17,14 +18,17 @@ app.use('*', logger());
 app.use(
   '*',
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:4200'],
+    origin: ['http://localhost:4201', 'http://localhost:4200'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
-    exposeHeaders: ['Content-Length'],
+    allowHeaders: ['Content-Type', 'Cookie', 'Set-Cookie', 'Authorization'],
+    exposeHeaders: ['Set-Cookie', 'Authorization'],
     maxAge: 600,
     credentials: true,
   }),
 );
+
+// Remove global session middleware
+// app.use('*', session);
 
 app.get('/', (c) => {
   return c.json({
@@ -39,8 +43,9 @@ app.get('/', (c) => {
   });
 });
 
-app.route('/api/products', productsRoute);
+// Apply session middleware only to routes that need it
 app.route('/api/users', usersRoute);
+app.route('/api/products', productsRoute);
 app.route('/api/cart', cartRoute);
 app.route('/api/orders', ordersRoute);
 

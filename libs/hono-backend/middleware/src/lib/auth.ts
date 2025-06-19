@@ -1,39 +1,52 @@
-import jwt from 'jsonwebtoken';
-import { User } from '@monostore/backend-model'; // Adjust the import path as necessary
-import {createMiddleware} from 'hono/factory';
+import { Session, sessionMiddleware, CookieStore } from 'hono-sessions';
+import { User } from '@monostore/backend-model';
+import { createMiddleware } from 'hono/factory';
 
-// JWT secret (in production, this would be in environment variables)
-const JWT_SECRET = '0a732767d5ee374d4a3478077f84a009863';
-
-// Generate JWT token
-export function generateToken(user: User) {
-  const payload = {
-    id: user.id,
-    email: user.email,
-    role: user.role
-  };
-  
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: '1d' });
+// Define session data types
+export type SessionDataTypes = {
+  'user': Omit<User, 'password'>;
 }
+
+// Secret key (in production, this would be in environment variables)
+const SESSION_SECRET = '0a732767d5ee374d4a3478077f84a009863';
+
+// Create cookie stor5173e
+const store = new CookieStore();
+
+// Session middleware configuration
+export const session = sessionMiddleware({
+  store,
+  encryptionKey: SESSION_SECRET,
+  expireAfterSeconds: 24 * 60 * 60, // 1 day
+  cookieOptions: {
+    sameSite: 'None',  // Allow cross-site cookies
+    path: '/',
+    httpOnly: true,
+    secure: true,  // Required for SameSite=None
+    domain: 'localhost'  // Explicitly set domain
+  }
+});
 
 // Auth middleware
 export const auth = createMiddleware(async (c, next) => {
-  const authHeader = c.req.header('Authorization');
+  console.log('Auth middleware - Request headers:', c.req.raw.headers);
+  const cookies = c.req.header('cookie');
+  console.log('Auth middleware - Cookies:', cookies);
   
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return c.json({ error: 'Unauthorized - No token provided' }, 401);
+  const session = c.get('session');
+  console.log('Auth middleware - Session:', session);
+  
+  const user = session.get('user');
+  console.log('Auth middleware - User from session:', user);
+  
+  if (!user) {
+    console.log('Auth middleware - No user in session');
+    return c.json({ error: 'Unauthorized - Please login' }, 401);
   }
   
-  const token = authHeader.split(' ')[1];
-  
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    c.set('user', decoded);
-    return next();
-  } catch (error) {
-    return c.json({ error: 'Unauthorized - Invalid token' }, 401);
-  }
-})
+  c.set('user', user);
+  return next();
+});
 
 // Admin middleware (checks if user has admin role)
 export const adminOnly = createMiddleware(async (c, next) => {
@@ -45,3 +58,10 @@ export const adminOnly = createMiddleware(async (c, next) => {
   
   return next();
 });
+
+// Helper function to set user session
+export function setUserSession(c: any, user: User) {
+  const { password: _, ...userWithoutPassword } = user;
+  const sessionData = c.get('session') as Session<SessionDataTypes>;
+  sessionData.set('user', userWithoutPassword);
+}

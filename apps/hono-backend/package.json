@@ -43,16 +43,18 @@
           }
         }
       },
+      "watch-deps": {
+        "executor": "nx:run-commands",
+        "options": {
+          "command": "nx watch --projects=hono-backend --includeDependentProjects -- nx run-many -t build -p $NX_PROJECT_NAME --exclude=hono-backend"
+        }
+      },
       "dev": {
-        "continuous": true,
         "executor": "@nx/js:node",
         "defaultConfiguration": "development",
-        "dependsOn": [
-          "build"
-        ],
         "options": {
           "buildTarget": "hono-backend:build",
-          "runBuildTargetDependencies": false
+          "watch": true
         },
         "configurations": {
           "development": {

@@ -1,18 +1,23 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { login } from '../../api';
+import { useAuth } from '../../context/auth-context';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();
+  const queryClient = useQueryClient();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const loginMutation = useMutation({
     mutationFn: ({ email, password }: { email: string; password: string }) =>
       login(email, password),
-    onSuccess: () => {
+    onSuccess: async () => {
+      await checkAuth(); // Wait for auth check to complete
+      queryClient.invalidateQueries(); // Invalidate all queries to refresh data
       toast.success('Logged in successfully');
       navigate('/');
     },

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { checkout } from '../../api';
 
 export default function Checkout() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [address, setAddress] = useState({
     street: '',
     city: '',
@@ -17,6 +18,7 @@ export default function Checkout() {
   const checkoutMutation = useMutation({
     mutationFn: (shippingAddress: typeof address) => checkout(shippingAddress),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['cart'] });
       toast.success('Order placed successfully!');
       navigate('/');
     },

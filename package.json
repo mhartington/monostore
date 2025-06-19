@@ -2,12 +2,15 @@
   "name": "@monostore/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev:backend": "nx run-many -t watch-deps,dev -p hono-backend"
+  },
   "private": true,
   "dependencies": {
     "@hono/node-server": "^1.14.1",
     "@tanstack/react-query": "^5.76.0",
     "hono": "^4.7.9",
+    "hono-sessions": "^0.7.2",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.510.0",
     "open-props": "^1.7.15",

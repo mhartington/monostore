@@ -1,5 +1,13 @@
 const API_URL = 'http://localhost:3000/api';
 
+// Common fetch options for authenticated requests
+const authFetchOptions: RequestInit = {
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+};
+
 export async function getProducts(category?: string) {
   const url = new URL(`${API_URL}/products`);
   if (category) {
@@ -17,23 +25,15 @@ export async function getProduct(id: string) {
 }
 
 export async function getCart() {
-  const token = localStorage.getItem('token')
-  const response = await fetch(`${API_URL}/cart`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  });
+  const response = await fetch(`${API_URL}/cart`, authFetchOptions);
   if (!response.ok) throw new Error('Failed to fetch cart');
   return response.json();
 }
 
 export async function addToCart(productId: string, quantity: number) {
   const response = await fetch(`${API_URL}/cart/items`, {
+    ...authFetchOptions,
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    },
     body: JSON.stringify({ productId, quantity })
   });
   if (!response.ok) throw new Error('Failed to add to cart');
@@ -42,11 +42,8 @@ export async function addToCart(productId: string, quantity: number) {
 
 export async function updateCartItem(productId: string, quantity: number) {
   const response = await fetch(`${API_URL}/cart/items/${productId}`, {
+    ...authFetchOptions,
     method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    },
     body: JSON.stringify({ quantity })
   });
   if (!response.ok) throw new Error('Failed to update cart');
@@ -55,10 +52,8 @@ export async function updateCartItem(productId: string, quantity: number) {
 
 export async function removeFromCart(productId: string) {
   const response = await fetch(`${API_URL}/cart/items/${productId}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
+    ...authFetchOptions,
+    method: 'DELETE'
   });
   if (!response.ok) throw new Error('Failed to remove from cart');
   return response.json();
@@ -66,26 +61,31 @@ export async function removeFromCart(productId: string) {
 
 export async function login(email: string, password: string) {
   const response = await fetch(`${API_URL}/users/login`, {
+    ...authFetchOptions,
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password })
   });
   if (!response.ok) throw new Error('Failed to login');
-  const data = await response.json();
-  localStorage.setItem('token', data.token);
-  return data;
+  return response.json();
+}
+
+export async function logout() {
+  const response = await fetch(`${API_URL}/users/logout`, {
+    ...authFetchOptions,
+    method: 'POST'
+  });
+  if (!response.ok) throw new Error('Failed to logout');
+  return response.json();
 }
 
 export async function checkout(shippingAddress: any) {
-  const body = JSON.stringify({ shippingAddress: shippingAddress, paymentMethod: 'credit_card' })
-  console.log(body)
   const response = await fetch(`${API_URL}/orders`, {
+    ...authFetchOptions,
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    },
-    body
+    body: JSON.stringify({ 
+      shippingAddress: shippingAddress, 
+      paymentMethod: 'credit_card' 
+    })
   });
   if (!response.ok) throw new Error('Failed to create order');
   return response.json();

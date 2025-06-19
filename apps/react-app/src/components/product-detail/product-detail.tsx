@@ -4,12 +4,15 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Minus, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getProduct, addToCart } from '../../api';
+import { useAuth } from '../../context/auth-context';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth();
   const [quantity, setQuantity] = useState(1);
+
   const { data, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: () => getProduct(id)
@@ -33,7 +36,7 @@ export default function ProductDetail() {
   if (!product) return <div>Product not found</div>;
 
   const handleAddToCart = () => {
-    if (!localStorage.getItem('token')) {
+    if (!isAuthenticated) {
       navigate('/login');
       return;
     }

@@ -16,6 +16,9 @@
   "references": [
     {
       "path": "../../libs/hono-backend/routes/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/hono-backend/middleware/tsconfig.lib.json"
     }
   ]
 }

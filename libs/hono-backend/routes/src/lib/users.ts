@@ -1,17 +1,24 @@
 import { Hono } from 'hono';
 import { users, generateId, User } from '@monostore/backend-model';
-import { generateToken, auth } from '@monostore/backend-middleware';
+import { auth, session, setUserSession } from '@monostore/backend-middleware';
 import { validate, registerSchema, loginSchema } from '@monostore/backend-utils';
+import { Session } from 'hono-sessions';
 
+// Define the Variables type with session included
 type Variables = {
-  user: User,
-  body: User
+  user: User;
+  body: User;
+  session: Session;
 }
+
 const app = new Hono<{Variables: Variables}>();
 
+// Only apply session middleware to authenticated routes
+app.use('/profile', session);
+app.use('/logout', session);
 
 // Register new user
-app.post('/register', validate(registerSchema), (c) => {
+app.post('/register', validate(registerSchema), session, (c) => {
   const { username, email, password } = c.get('body');
   
   // Check if user with email already exists
@@ -31,21 +38,20 @@ app.post('/register', validate(registerSchema), (c) => {
   
   users.push(newUser);
   
-  // Generate token
-  const token = generateToken(newUser);
+  // Set user session
+  setUserSession(c, newUser);
   
   // Remove password from response
   const { password: _, ...userWithoutPassword } = newUser;
   
   return c.json({
     message: 'User registered successfully',
-    user: userWithoutPassword,
-    token
+    user: userWithoutPassword
   }, 201);
 });
 
 // Login user
-app.post('/login', validate(loginSchema), (c) => {
+app.post('/login', validate(loginSchema), session, async (c) => {
   const { email, password } = c.get('body');
   
   // Find user
@@ -56,32 +62,49 @@ app.post('/login', validate(loginSchema), (c) => {
     return c.json({ error: 'Invalid credentials' }, 401);
   }
   
-  // Generate token
-  const token = generateToken(user);
+  // Clear any existing session by setting user to undefined
+  const existingSession = c.get('session');
+  if (existingSession) {
+    existingSession.set('user', undefined);
+  }
+  
+  // Set new user session
+  setUserSession(c, user);
   
   // Remove password from response
   const { password: _, ...userWithoutPassword } = user;
   
   return c.json({
     message: 'Login successful',
-    user: userWithoutPassword,
-    token
+    user: userWithoutPassword
   });
+});
+
+// Logout user
+app.post('/logout', (c) => {
+  const session = c.get('session');
+  session.set('user', undefined);
+  return c.json({ message: 'Logged out successfully' });
 });
 
 // Get user profile (authenticated)
 app.get('/profile', auth, (c) => {
   const authenticatedUser = c.get('user');
+  console.log('getting user');
+  console.log(c.get('session'));
+  console.log('Profile request - Authenticated user:', authenticatedUser);
   
   // Find full user details
   const user = users.find(u => u.id === authenticatedUser.id);
   
   if (!user) {
+    console.log('Profile request - User not found in database');
     return c.json({ error: 'User not found' }, 404);
   }
   
   // Remove password from response
   const { password: _, ...userWithoutPassword } = user;
+  console.log('Profile request - Sending user data:', userWithoutPassword);
   
   return c.json({ user: userWithoutPassword });
 });
