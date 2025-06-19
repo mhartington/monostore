@@ -3,7 +3,6 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { HTTPException } from 'hono/http-exception';
-import { session } from '@monostore/backend-middleware';
 
 import {
   productsRoute,
@@ -27,9 +26,6 @@ app.use(
   }),
 );
 
-// Remove global session middleware
-// app.use('*', session);
-
 app.get('/', (c) => {
   return c.json({
     message: 'E-commerce API is running',
@@ -43,7 +39,6 @@ app.get('/', (c) => {
   });
 });
 
-// Apply session middleware only to routes that need it
 app.route('/api/users', usersRoute);
 app.route('/api/products', productsRoute);
 app.route('/api/cart', cartRoute);
