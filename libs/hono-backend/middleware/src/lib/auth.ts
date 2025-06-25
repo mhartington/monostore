@@ -19,11 +19,11 @@ export const session = sessionMiddleware({
   encryptionKey: SESSION_SECRET,
   expireAfterSeconds: 24 * 60 * 60, // 1 day
   cookieOptions: {
-    sameSite: 'None',  // Allow cross-site cookies
+    sameSite: 'lax',  // Allow cross-site cookies
     path: '/',
     httpOnly: true,
-    secure: true,  // Required for SameSite=None
-    domain: 'localhost'  // Explicitly set domain
+    secure: false,  // Required for SameSite=None
+    // domain: 'localhost'  // Explicitly set domain
   }
 });
 

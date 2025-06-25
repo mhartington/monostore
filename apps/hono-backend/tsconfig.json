@@ -7,9 +7,6 @@
       "path": "../../libs/hono-backend/routes"
     },
     {
-      "path": "../../libs/hono-backend/middleware"
-    },
-    {
       "path": "./tsconfig.app.json"
     }
   ]

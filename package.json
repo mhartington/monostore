@@ -43,10 +43,25 @@
     "postcss": "8.4.38",
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
+    "verdaccio": "^6.0.5",
     "vite": "^6.0.0"
   },
   "workspaces": [
     "apps/*",
-    "libs/hono-backend/*"
-  ]
+    "libs/hono-backend/*",
+    "libs/*"
+  ],
+  "nx": {
+    "includedScripts": [],
+    "targets": {
+      "local-registry": {
+        "executor": "@nx/js:verdaccio",
+        "options": {
+          "port": 4873,
+          "config": ".verdaccio/config.yml",
+          "storage": "tmp/local-registry/storage"
+        }
+      }
+    }
+  }
 }

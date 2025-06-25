@@ -2,23 +2,15 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "rootDir": "src",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.mts"
-],
+  "include": ["src/**/*.ts", "src/**/*.mts"],
   "exclude": [],
   "references": [
     {
       "path": "../../libs/hono-backend/routes/tsconfig.lib.json"
-    },
-    {
-      "path": "../../libs/hono-backend/middleware/tsconfig.lib.json"
     }
   ]
 }
