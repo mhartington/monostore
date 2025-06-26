@@ -2,9 +2,7 @@
   "name": "@monostore/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {
-    "dev:backend": "nx run-many -t watch-deps,dev -p hono-backend"
-  },
+  "scripts": {},
   "private": true,
   "dependencies": {
     "@hono/node-server": "^1.14.1",
@@ -23,7 +21,7 @@
     "zod": "^3.25.7"
   },
   "devDependencies": {
-    "@nx/angular": "21.2.1",
+    "@nx/angular": "^21.2.1",
     "@nx/esbuild": "21.2.1",
     "@nx/js": "21.2.1",
     "@nx/node": "21.2.1",
