@@ -2,7 +2,6 @@
   "name": "@monostore/backend",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
   "nx": {
     "name": "hono-backend",
     "targets": {
@@ -16,18 +15,15 @@
           "platform": "node",
           "outputPath": "apps/hono-backend/dist",
           "format": [
-            "esm"
+            "cjs"
           ],
           "bundle": false,
           "main": "apps/hono-backend/src/main.ts",
           "tsConfig": "apps/hono-backend/tsconfig.app.json",
-          "assets": [
-            "apps/hono-backend/src/assets"
-          ],
           "esbuildOptions": {
             "sourcemap": true,
             "outExtension": {
-              ".mjs": ".mjs"
+              ".js": ".js"
             }
           }
         },
@@ -41,12 +37,6 @@
               }
             }
           }
-        }
-      },
-      "watch-deps": {
-        "executor": "nx:run-commands",
-        "options": {
-          "command": "nx watch --projects=hono-backend --includeDependentProjects -- nx run-many -t build -p $NX_PROJECT_NAME --exclude=hono-backend"
         }
       },
       "dev": {

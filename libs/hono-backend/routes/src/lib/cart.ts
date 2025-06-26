@@ -1,7 +1,7 @@
-import { Hono } from 'hono';
-import { carts, products } from '@monostore/backend-model';
-import { auth, session } from '@monostore/backend-middleware';
-import { validate, cartItemSchema } from '@monostore/backend-utils';
+import { Hono } from "hono";
+import { carts, products } from "@monostore/backend-model";
+import { auth, session } from "@monostore/backend-middleware";
+import { validate, cartItemSchema } from "@monostore/backend-utils";
 
 type Variables = {
   user: {
@@ -16,7 +16,7 @@ type Variables = {
 const app = new Hono<{ Variables: Variables }>();
 
 // Apply session middleware to all cart routes
-app.use('*', session);
+app.use("*", session);
 
 // Initialize cart if it doesn't exist
 function initializeCart(userId: string | number) {
@@ -30,34 +30,31 @@ function initializeCart(userId: string | number) {
 }
 
 // Get cart
-app.get('/', auth, (c) => {
+app.get("/", auth, (c) => {
   try {
-    const { id: userId } = c.get('user');
-    console.log('Getting cart for user:', userId);
+    const { id: userId } = c.get("user");
     const cart = initializeCart(userId);
     return c.json({ cart });
   } catch (error) {
-    console.error('Error getting cart:', error);
-    return c.json({ error: 'Internal server error' }, 500);
+    return c.json({ error: "Internal server error" }, 500);
   }
 });
 
 // Add item to cart
-app.post('/items', auth, validate(cartItemSchema), (c) => {
+app.post("/items", auth, validate(cartItemSchema), (c) => {
   try {
-    const { id: userId } = c.get('user');
-    const { productId, quantity } = c.get('body');
-    console.log('Adding item to cart:', { userId, productId, quantity });
+    const { id: userId } = c.get("user");
+    const { productId, quantity } = c.get("body");
 
     // Find product
     const product = products.find((p) => p.id === productId);
 
     if (!product) {
-      return c.json({ error: 'Product not found' }, 404);
+      return c.json({ error: "Product not found" }, 404);
     }
 
     if (quantity > product.stock) {
-      return c.json({ error: 'Not enough stock available' }, 400);
+      return c.json({ error: "Not enough stock available" }, 400);
     }
 
     const cart = initializeCart(userId);
@@ -72,7 +69,7 @@ app.post('/items', auth, validate(cartItemSchema), (c) => {
       const newQuantity = existingItem.quantity + quantity;
 
       if (newQuantity > product.stock) {
-        return c.json({ error: 'Not enough stock available' }, 400);
+        return c.json({ error: "Not enough stock available" }, 400);
       }
 
       existingItem.quantity = newQuantity;
@@ -97,24 +94,23 @@ app.post('/items', auth, validate(cartItemSchema), (c) => {
     );
 
     return c.json({
-      message: 'Item added to cart',
+      message: "Item added to cart",
       cart,
     });
   } catch (error) {
-    console.error('Error adding item to cart:', error);
-    return c.json({ error: 'Internal server error' }, 500);
+    return c.json({ error: "Internal server error" }, 500);
   }
 });
 
 // Update cart item
-app.put('/items/:productId', auth, async (c) => {
-  const { id: userId } = c.get('user');
-  const productId = c.req.param('productId');
+app.put("/items/:productId", auth, async (c) => {
+  const { id: userId } = c.get("user");
+  const productId = c.req.param("productId");
   const body = await c.req.json();
   const { quantity } = body;
 
   if (isNaN(quantity) || quantity < 1) {
-    return c.json({ error: 'Invalid quantity' }, 400);
+    return c.json({ error: "Invalid quantity" }, 400);
   }
 
   const cart = initializeCart(userId);
@@ -123,13 +119,13 @@ app.put('/items/:productId', auth, async (c) => {
   );
 
   if (itemIndex === -1) {
-    return c.json({ error: 'Item not found in cart' }, 404);
+    return c.json({ error: "Item not found in cart" }, 404);
   }
 
   const product = products.find((p) => p.id === productId);
 
   if (quantity > product!.stock) {
-    return c.json({ error: 'Not enough stock available' }, 400);
+    return c.json({ error: "Not enough stock available" }, 400);
   }
 
   // Update item
@@ -144,15 +140,15 @@ app.put('/items/:productId', auth, async (c) => {
   );
 
   return c.json({
-    message: 'Cart item updated',
+    message: "Cart item updated",
     cart,
   });
 });
 
 // Remove item from cart
-app.delete('/items/:productId', auth, (c) => {
-  const { id: userId } = c.get('user');
-  const productId = c.req.param('productId');
+app.delete("/items/:productId", auth, (c) => {
+  const { id: userId } = c.get("user");
+  const productId = c.req.param("productId");
 
   const cart = initializeCart(userId);
   const itemIndex = cart.items.findIndex(
@@ -160,7 +156,7 @@ app.delete('/items/:productId', auth, (c) => {
   );
 
   if (itemIndex === -1) {
-    return c.json({ error: 'Item not found in cart' }, 404);
+    return c.json({ error: "Item not found in cart" }, 404);
   }
 
   // Remove item
@@ -173,14 +169,14 @@ app.delete('/items/:productId', auth, (c) => {
   );
 
   return c.json({
-    message: 'Item removed from cart',
+    message: "Item removed from cart",
     cart,
   });
 });
 
 // Clear cart
-app.delete('/', auth, (c) => {
-  const { id: userId } = c.get('user');
+app.delete("/", auth, (c) => {
+  const { id: userId } = c.get("user");
 
   carts[userId] = {
     items: [],
@@ -188,7 +184,7 @@ app.delete('/', auth, (c) => {
   };
 
   return c.json({
-    message: 'Cart cleared',
+    message: "Cart cleared",
     cart: carts[userId],
   });
 });
