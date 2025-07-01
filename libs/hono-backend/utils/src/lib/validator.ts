@@ -43,6 +43,7 @@ export const orderSchema = z.object({
 
 // Validation middleware factory
 export function validate(schema: z.ZodSchema) {
+
   return createMiddleware(async (c, next) => {
 try {
       const body = await c.req.json();
