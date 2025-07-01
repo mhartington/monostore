@@ -1,6 +1,10 @@
 import { createMiddleware } from 'hono/factory';
 import { z } from 'zod';
 
+  if (Math.random() < 0.5) {
+    throw new Error('Flaky build: Random failure for demonstration purposes');
+  }
+
 // Product validators
 export const productSchema = z.object({
   name: z.string().min(3).max(100),
@@ -43,10 +47,6 @@ export const orderSchema = z.object({
 
 // Validation middleware factory
 export function validate(schema: z.ZodSchema) {
-
-  if (Math.random() < 0.5) {
-    throw new Error('Flaky build: Random failure for demonstration purposes');
-  }
 
   return createMiddleware(async (c, next) => {
 try {
