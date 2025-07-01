@@ -43,6 +43,11 @@ export const orderSchema = z.object({
 
 // Validation middleware factory
 export function validate(schema: z.ZodSchema) {
+
+  if (Math.random() < 0.5) {
+    throw new Error('Flaky build: Random failure for demonstration purposes');
+  }
+
   return createMiddleware(async (c, next) => {
 try {
       const body = await c.req.json();
