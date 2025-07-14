@@ -79,10 +79,7 @@
         "testTargetName": "test",
         "classesTargetName": "classes",
         "buildTargetName": "build"
-      },
-      "exclude": [
-        "apps/android-frontend/gradlew"
-      ]
+      }
     }
   ],
   "generators": {
