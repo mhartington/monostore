@@ -1,0 +1,97 @@
+package com.example.myapplication.ui.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.model.Cart
+import com.example.myapplication.data.repository.CartRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class CartViewModel @Inject constructor(
+    private val cartRepository: CartRepository
+) : ViewModel() {
+    
+    private val _uiState = MutableStateFlow(CartUiState())
+    val uiState: StateFlow<CartUiState> = _uiState.asStateFlow()
+    
+    init {
+        loadCart()
+    }
+    
+    fun loadCart() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
+            cartRepository.getCart().collect { result ->
+                result.fold(
+                    onSuccess = { cart ->
+                        _uiState.value = _uiState.value.copy(
+                            cart = cart,
+                            isLoading = false,
+                            error = null
+                        )
+                    },
+                    onFailure = { error ->
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            error = error.message ?: "Failed to load cart"
+                        )
+                    }
+                )
+            }
+        }
+    }
+    
+    fun updateItemQuantity(productId: String, quantity: Int) {
+        viewModelScope.launch {
+            cartRepository.updateCartItem(productId, quantity).collect { result ->
+                result.fold(
+                    onSuccess = { cart ->
+                        _uiState.value = _uiState.value.copy(cart = cart)
+                    },
+                    onFailure = { error ->
+                        _uiState.value = _uiState.value.copy(
+                            error = error.message ?: "Failed to update item"
+                        )
+                    }
+                )
+            }
+        }
+    }
+    
+    fun removeItem(productId: String) {
+        viewModelScope.launch {
+            cartRepository.removeFromCart(productId).collect { result ->
+                result.fold(
+                    onSuccess = { cart ->
+                        _uiState.value = _uiState.value.copy(cart = cart)
+                    },
+                    onFailure = { error ->
+                        _uiState.value = _uiState.value.copy(
+                            error = error.message ?: "Failed to remove item"
+                        )
+                    }
+                )
+            }
+        }
+    }
+    
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
+    }
+    
+    fun retry() {
+        loadCart()
+    }
+}
+
+data class CartUiState(
+  val cart: Cart? = null,
+  val isLoading: Boolean = false,
+  val error: String? = null
+) 
