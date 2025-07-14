@@ -1,10 +1,7 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "namedInputs": {
-    "default": [
-      "{projectRoot}/**/*",
-      "sharedGlobals"
-    ],
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": [
       "default",
       "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
@@ -12,9 +9,7 @@
       "!{projectRoot}/src/test-setup.[jt]s",
       "!{projectRoot}/src/test/**/*"
     ],
-    "sharedGlobals": [
-      "{workspaceRoot}/.github/workflows/build.yml"
-    ]
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/build.yml"]
   },
   "plugins": [
     {
@@ -30,10 +25,7 @@
           "watchDepsName": "watch-deps"
         }
       },
-      "exclude": [
-        "libs/hono-backend/testing/*",
-        "libs/testing/*"
-      ]
+      "exclude": ["libs/testing/*"]
     },
     {
       "plugin": "@nx/react/router-plugin",
@@ -103,13 +95,8 @@
   "targetDefaults": {
     "@nx/esbuild:esbuild": {
       "cache": true,
-      "dependsOn": [
-        "^build"
-      ],
-      "inputs": [
-        "production",
-        "^production"
-      ]
+      "dependsOn": ["^build"],
+      "inputs": ["production", "^production"]
     }
   },
   "nxCloudId": "684ae9e8430f766b0daa7b44"

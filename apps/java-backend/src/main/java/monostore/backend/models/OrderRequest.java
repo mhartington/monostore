@@ -3,11 +3,6 @@ package monostore.backend.models;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.List;
 
 @Data
 public class OrderRequest {
