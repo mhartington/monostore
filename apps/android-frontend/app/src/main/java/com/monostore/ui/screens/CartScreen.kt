@@ -42,19 +42,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import com.monostore.ui.viewmodel.CartViewModel
+import com.monostore.ui.cart.CartViewModel
 
 import com.monostore.R
 import com.monostore.data.model.Cart
 import com.monostore.data.model.CartItem
+import com.monostore.ui.viewmodel.AuthViewModel
 
 @Composable
 fun CartScreen(
   onNavigateToCheckout: () -> Unit,
   onNavigateToLogin: () -> Unit,
-  viewModel: CartViewModel = hiltViewModel()
+  viewModel: CartViewModel = hiltViewModel(),
+  authViewModel: AuthViewModel = hiltViewModel()
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+  val authUiState by authViewModel.uiState.collectAsStateWithLifecycle()
 
   LaunchedEffect(uiState.error) {
     if (uiState.error != null) {
@@ -75,7 +78,19 @@ fun CartScreen(
 
     Spacer(modifier = Modifier.height(16.dp))
 
+    // Check authentication
     when {
+      authUiState.isLoading -> {
+        Box(
+          modifier = Modifier.fillMaxSize(),
+          contentAlignment = Alignment.Center
+        ) {
+          CircularProgressIndicator()
+        }
+      }
+      !authUiState.isAuthenticated -> {
+        NotLoggedInSection(onNavigateToLogin)
+      }
       uiState.isLoading -> {
         Box(
           modifier = Modifier.fillMaxSize(),
@@ -101,6 +116,25 @@ fun CartScreen(
           onNavigateToCheckout = onNavigateToCheckout
         )
       }
+    }
+  }
+}
+
+@Composable
+private fun NotLoggedInSection(onNavigateToLogin: () -> Unit) {
+  Column(
+    modifier = Modifier.fillMaxSize(),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.Center
+  ) {
+    Text(
+      text = "Please log in to view your cart.",
+      style = MaterialTheme.typography.headlineSmall,
+      color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    Button(onClick = onNavigateToLogin) {
+      Text("Login")
     }
   }
 }

@@ -42,6 +42,7 @@
       "dev": {
         "executor": "@nx/js:node",
         "defaultConfiguration": "development",
+        "continuous": true,
         "options": {
           "buildTarget": "hono-backend:build",
           "watch": true

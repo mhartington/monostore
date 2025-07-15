@@ -37,6 +37,11 @@ import com.monostore.ui.screens.CartScreen
 import com.monostore.ui.screens.CheckoutScreen
 import com.monostore.ui.screens.LoginScreen
 import com.monostore.ui.screens.ProductDetail
+import androidx.compose.material3.BadgedBox
+import androidx.compose.material3.Badge
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.monostore.ui.cart.CartViewModel
 
 sealed class Screen(val route: String, val title: String) {
   object ProductList : Screen("product_list", "Products")
@@ -47,15 +52,18 @@ sealed class Screen(val route: String, val title: String) {
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
-  NavigationBar {
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+fun BottomNavigationBar(
+    navController: NavHostController,
+    cartItemCount: Int // Pass cart count to this Composable
+) {
+    NavigationBar {
+        val navBackStackEntry by navController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
 
-    NavigationBarItem(
-      icon = { Icon(Icons.Default.Home, contentDescription = null) },
-      label = { Text(stringResource(R.string.nav_home)) },
-      selected = currentRoute == Screen.ProductList.route,
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Home, contentDescription = null) },
+            label = { Text(stringResource(R.string.nav_home)) },
+            selected = currentRoute == Screen.ProductList.route,
       onClick = {
         navController.navigate(Screen.ProductList.route) {
           popUpTo(navController.graph.startDestinationId) {
@@ -66,24 +74,34 @@ fun BottomNavigationBar(navController: NavHostController) {
         }
       })
 
-    NavigationBarItem(
-      icon = { Icon(Icons.Default.ShoppingCart, contentDescription = null) },
-      label = { Text(stringResource(R.string.nav_cart)) },
-      selected = currentRoute == Screen.Cart.route,
-      onClick = {
-        navController.navigate(Screen.Cart.route) {
-          popUpTo(navController.graph.startDestinationId) {
-            saveState = true
-          }
-          launchSingleTop = true
-          restoreState = true
-        }
-      })
+        NavigationBarItem(
+            icon = {
+                if (cartItemCount > 0) {
+                    BadgedBox(badge = {
+                        Badge { Text(cartItemCount.toString()) }
+                    }) {
+                        Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                    }
+                } else {
+                    Icon(Icons.Default.ShoppingCart, contentDescription = null)
+                }
+            },
+            label = { Text(stringResource(R.string.nav_cart)) },
+            selected = currentRoute == Screen.Cart.route,
+          onClick = {
+            navController.navigate(Screen.Cart.route) {
+              popUpTo(navController.graph.startDestinationId) {
+                saveState = true
+              }
+              launchSingleTop = true
+              restoreState = true
+            }
+          })
 
-    NavigationBarItem(
-      icon = { Icon(Icons.Default.Person, contentDescription = null) },
-      label = { Text(stringResource(R.string.nav_profile)) },
-      selected = currentRoute == Screen.Login.route,
+        NavigationBarItem(
+            icon = { Icon(Icons.Default.Person, contentDescription = null) },
+            label = { Text(stringResource(R.string.nav_profile)) },
+            selected = currentRoute == Screen.Login.route,
       onClick = {
         navController.navigate(Screen.Login.route) {
           popUpTo(navController.graph.startDestinationId) {
@@ -93,7 +111,7 @@ fun BottomNavigationBar(navController: NavHostController) {
           restoreState = true
         }
       })
-  }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,11 +137,21 @@ fun SettingsScreen() {
 
 @Composable
 fun MonoStoreApp() {
-  val navController = rememberNavController()
-  Scaffold(
-    topBar = { TopAppBacreen(navController = navController) },
-    bottomBar = { BottomNavigationBar(navController = navController) }) { padding ->
-    NavHost(
+    val navController = rememberNavController()
+    // Example: Getting cart item count from a ViewModel
+    val cartViewModel: CartViewModel = viewModel()
+    val cartItemCount by cartViewModel.cartItemCount.collectAsState()
+    
+    Scaffold(
+        topBar = { TopAppBacreen(navController = navController) },
+        bottomBar = {
+            BottomNavigationBar(
+                navController = navController,
+                cartItemCount = cartItemCount
+            )
+        }
+    ) { padding ->
+        NavHost(
       navController = navController, startDestination = Screen.ProductList.route, modifier = Modifier.padding(padding)
     ) {
       composable(Screen.ProductList.route) {
