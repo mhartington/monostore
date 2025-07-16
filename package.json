@@ -21,12 +21,14 @@
     "zod": "^3.25.7"
   },
   "devDependencies": {
-    "@nx/angular": "^21.2.1",
-    "@nx/esbuild": "21.2.1",
-    "@nx/js": "21.2.1",
-    "@nx/node": "21.2.1",
-    "@nx/react": "21.2.1",
-    "@nx/vite": "21.2.1",
+    "@nx/angular": "0.0.0-pr-31634-cb74636",
+    "@nx/esbuild": "0.0.0-pr-31634-cb74636",
+    "@nx/js": "0.0.0-pr-31634-cb74636",
+    "@nx/node": "0.0.0-pr-31634-cb74636",
+    "@nx/react": "0.0.0-pr-31634-cb74636",
+    "@nx/vite": "0.0.0-pr-31634-cb74636",
+    "@nx/gradle": "0.0.0-pr-31634-cb74636",
+    "@nx/docker": "0.0.0-pr-31634-cb74636",
     "@swc-node/register": "~1.9.1",
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
@@ -38,13 +40,12 @@
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "10.4.13",
     "esbuild": "^0.19.2",
-    "nx": "21.2.1",
+    "nx": "0.0.0-pr-31634-cb74636",
     "postcss": "8.4.38",
     "tslib": "^2.3.0",
     "typescript": "5.8.3",
     "verdaccio": "^6.0.5",
-    "vite": "^6.0.0",
-    "@nx/gradle": "21.2.1"
+    "vite": "^6.0.0"
   },
   "workspaces": [
     "apps/*",

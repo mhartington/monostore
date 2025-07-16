@@ -44,18 +44,22 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.monostore.data.model.Product
 import com.monostore.R
+import com.monostore.ui.viewmodel.CartViewModel
 
 @Composable
 fun ProductDetail(
   onNavigateToLogin: () -> Unit,
-  viewModel: ProductDetailViewModel = hiltViewModel()
+  viewModel: ProductDetailViewModel = hiltViewModel(),
+  cartViewModel: CartViewModel = hiltViewModel()
 ) {
   val uiState by viewModel.uiState.collectAsStateWithLifecycle()
   val quantity by viewModel.quantity.collectAsStateWithLifecycle()
-
+  val addToCartSuccess = uiState.addToCartSuccess
   LaunchedEffect(uiState.addToCartSuccess) {
     if (uiState.addToCartSuccess) {
       viewModel.clearAddToCartSuccess()
+      cartViewModel.loadCart()
+
     }
   }
 

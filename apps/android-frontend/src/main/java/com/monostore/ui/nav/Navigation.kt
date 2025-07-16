@@ -39,9 +39,9 @@ import com.monostore.ui.screens.LoginScreen
 import com.monostore.ui.screens.ProductDetail
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Badge
-import androidx.compose.runtime.collectAsState
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.monostore.ui.cart.CartViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.monostore.ui.viewmodel.CartViewModel
 
 sealed class Screen(val route: String, val title: String) {
   object ProductList : Screen("product_list", "Products")
@@ -52,18 +52,18 @@ sealed class Screen(val route: String, val title: String) {
 }
 
 @Composable
-fun BottomNavigationBar(
-    navController: NavHostController,
-    cartItemCount: Int // Pass cart count to this Composable
-) {
-    NavigationBar {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentRoute = navBackStackEntry?.destination?.route
+fun BottomNavigationBar(navController: NavHostController) {
+  val cartViewModel: CartViewModel = hiltViewModel()
+  val cartItemCount by cartViewModel.cartItemCount.collectAsStateWithLifecycle()
 
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Home, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_home)) },
-            selected = currentRoute == Screen.ProductList.route,
+  NavigationBar {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    NavigationBarItem(
+      icon = { Icon(Icons.Default.Home, contentDescription = null) },
+      label = { Text(stringResource(R.string.nav_home)) },
+      selected = currentRoute == Screen.ProductList.route,
       onClick = {
         navController.navigate(Screen.ProductList.route) {
           popUpTo(navController.graph.startDestinationId) {
@@ -74,34 +74,34 @@ fun BottomNavigationBar(
         }
       })
 
-        NavigationBarItem(
-            icon = {
-                if (cartItemCount > 0) {
-                    BadgedBox(badge = {
-                        Badge { Text(cartItemCount.toString()) }
-                    }) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = null)
-                    }
-                } else {
-                    Icon(Icons.Default.ShoppingCart, contentDescription = null)
-                }
-            },
-            label = { Text(stringResource(R.string.nav_cart)) },
-            selected = currentRoute == Screen.Cart.route,
-          onClick = {
-            navController.navigate(Screen.Cart.route) {
-              popUpTo(navController.graph.startDestinationId) {
-                saveState = true
-              }
-              launchSingleTop = true
-              restoreState = true
-            }
-          })
+    NavigationBarItem(
+      icon = {
+        if (cartItemCount > 0) {
+          BadgedBox(
+            badge = { Badge { Text(cartItemCount.toString()) } }
+          ) {
+            Icon(Icons.Default.ShoppingCart, contentDescription = null)
+          }
+        } else {
+          Icon(Icons.Default.ShoppingCart, contentDescription = null)
+        }
+      },
+      label = { Text(stringResource(R.string.nav_cart)) },
+      selected = currentRoute == Screen.Cart.route,
+      onClick = {
+        navController.navigate(Screen.Cart.route) {
+          popUpTo(navController.graph.startDestinationId) {
+            saveState = true
+          }
+          launchSingleTop = true
+          restoreState = true
+        }
+      })
 
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Person, contentDescription = null) },
-            label = { Text(stringResource(R.string.nav_profile)) },
-            selected = currentRoute == Screen.Login.route,
+    NavigationBarItem(
+      icon = { Icon(Icons.Default.Person, contentDescription = null) },
+      label = { Text(stringResource(R.string.nav_profile)) },
+      selected = currentRoute == Screen.Login.route,
       onClick = {
         navController.navigate(Screen.Login.route) {
           popUpTo(navController.graph.startDestinationId) {
@@ -111,12 +111,12 @@ fun BottomNavigationBar(
           restoreState = true
         }
       })
-    }
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBacreen(navController: NavHostController) {
+fun TopAppBar(navController: NavHostController) {
   val navBackStackEntry by navController.currentBackStackEntryAsState()
   val currentRoute = navBackStackEntry?.destination?.route
   TopAppBar(title = { Text(stringResource(R.string.app_name)) }, navigationIcon = {
@@ -129,29 +129,20 @@ fun TopAppBacreen(navController: NavHostController) {
 }
 
 @Composable
-fun SettingsScreen() {
-  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    Text("Settings Screen")
-  }
-}
-
-@Composable
 fun MonoStoreApp() {
-    val navController = rememberNavController()
-    // Example: Getting cart item count from a ViewModel
-    val cartViewModel: CartViewModel = viewModel()
-    val cartItemCount by cartViewModel.cartItemCount.collectAsState()
-    
-    Scaffold(
-        topBar = { TopAppBacreen(navController = navController) },
-        bottomBar = {
-            BottomNavigationBar(
-                navController = navController,
-                cartItemCount = cartItemCount
-            )
-        }
-    ) { padding ->
-        NavHost(
+  val navController = rememberNavController()
+  // Get cartViewModel with proper lifecycle scope
+  val cartViewModel: CartViewModel = hiltViewModel()
+  val cartItemCount by cartViewModel.cartItemCount.collectAsStateWithLifecycle()
+
+  // Log whenever cart count changes in the UI
+  println("DEBUG: Navigation - Current cart count displayed: $cartItemCount")
+
+  Scaffold(
+    topBar = { TopAppBar(navController = navController) },
+    bottomBar = { BottomNavigationBar(navController = navController) }
+  ) { padding ->
+    NavHost(
       navController = navController, startDestination = Screen.ProductList.route, modifier = Modifier.padding(padding)
     ) {
       composable(Screen.ProductList.route) {
@@ -164,9 +155,10 @@ fun MonoStoreApp() {
 
       composable(
         route = Screen.ProductDetail.route, arguments = listOf(
-        NavType.StringType.let {
-          navArgument("id") { type = it }
-        })) {
+          NavType.StringType.let {
+            navArgument("id") { type = it }
+          })
+      ) {
         ProductDetail(
           onNavigateToLogin = {
             navController.navigate(Screen.Login.route)

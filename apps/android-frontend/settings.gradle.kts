@@ -20,6 +20,4 @@ dependencyResolutionManagement {
     maven("https://jitpack.io")
   }
 }
-
-rootProject.name = "Monostore"
-include(":app")
+rootProject.name = "android-frontend"

@@ -19,43 +19,43 @@ class ProductDetailViewModel @Inject constructor(
     private val cartRepository: CartRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
-    
+
     private val productId: String = checkNotNull(savedStateHandle["id"])
-    
+
     private val _uiState = MutableStateFlow(ProductDetailUiState())
     val uiState: StateFlow<ProductDetailUiState> = _uiState.asStateFlow()
-    
+
     private val _quantity = MutableStateFlow(1)
     val quantity: StateFlow<Int> = _quantity.asStateFlow()
-    
+
     init {
         loadProduct()
     }
-    
+
     fun setQuantity(newQuantity: Int) {
         val product = _uiState.value.product
         if (product != null) {
             _quantity.value = newQuantity.coerceIn(1, product.stock)
         }
     }
-    
+
     fun incrementQuantity() {
         val product = _uiState.value.product
         if (product != null) {
             setQuantity(_quantity.value + 1)
         }
     }
-    
+
     fun decrementQuantity() {
         setQuantity(_quantity.value - 1)
     }
-    
+
     fun addToCart() {
         val product = _uiState.value.product ?: return
-        
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isAddingToCart = true)
-            
+
             cartRepository.addToCart(product.id, _quantity.value).collect { result ->
                 result.fold(
                     onSuccess = {
@@ -74,19 +74,19 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun clearAddToCartSuccess() {
         _uiState.value = _uiState.value.copy(addToCartSuccess = false)
     }
-    
+
     fun clearError() {
         _uiState.value = _uiState.value.copy(error = null)
     }
-    
+
     private fun loadProduct() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
-            
+
             productRepository.getProduct(productId).collect { result ->
                 result.fold(
                     onSuccess = { product ->
@@ -106,7 +106,7 @@ class ProductDetailViewModel @Inject constructor(
             }
         }
     }
-    
+
     fun retry() {
         loadProduct()
     }

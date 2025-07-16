@@ -71,8 +71,14 @@
       "options": {
         "testTargetName": "test",
         "classesTargetName": "classes",
-        "buildTargetName": "build",
-        
+        "buildTargetName": "build"
+      }
+    },
+    {
+      "plugin": "@nx/docker",
+      "options": {
+        "buildTarget": "docker:build",
+        "runTarget": "docker:run"
       }
     }
   ],
@@ -99,14 +105,18 @@
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
+    "docker:run":{
+      "options": {
+        "args": ["-p", "3000:3000"]
+      }
+    },
     "installDebug": {
       "cache": false,
       "continuous": true,
-      "dependsOn": ["packageDebug","preDebugBuild", "hono-backend:dev"],
-      "options": {
-        "args": "--continuous=true"
-        
-      }
+      "dependsOn": ["hono-backend:dev"]
+    },
+    "react-app:dev": {
+      "dependsOn": ["hono-backend:dev"]
     }
   },
   "nxCloudId": "684ae9e8430f766b0daa7b44"
