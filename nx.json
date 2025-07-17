@@ -105,7 +105,7 @@
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     },
-    "docker:run":{
+    "docker:run": {
       "options": {
         "args": ["-p", "3000:3000"]
       }
@@ -117,6 +117,25 @@
     },
     "react-app:dev": {
       "dependsOn": ["hono-backend:dev"]
+    }
+  },
+  "release": {
+    "projects": ["java-backend"],
+    "projectsRelationship": "independent",
+    "releaseTagPattern": "release/{projectName}/{version}",
+    "releaseTagPatternPreferDockerVersion": true,
+    "version": {
+      "docker": {
+        "versionSchemes": {
+          "production": "{currentDate|YYMM.DD}.{shortCommitSha}",
+          "hotfix": "{currentDate|YYMM.DD}.{shortCommitSha}-hotfix"
+        },
+        "preVersionCommand": "npx nx run-many -t docker:build -p java-backend"
+      },
+      "currentVersionResolver": "git-tag"
+    },
+    "changelog": {
+      "projectChangelogs": true
     }
   },
   "nxCloudId": "684ae9e8430f766b0daa7b44"
