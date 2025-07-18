@@ -56,6 +56,8 @@ app.notFound((c) => {
 
 const port = 3000;
 
+
+
 console.log(`Server starting on port ${port}...`);
 serve({
   fetch: app.fetch,
