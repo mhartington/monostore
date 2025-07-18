@@ -29,8 +29,9 @@ jobs:
         with:
           node-version: 20
           cache: 'npm'
-       
+     
       - run: npm ci
+
       - uses: nrwl/nx-set-shas@v4
 
       - run: npx nx affected -t lint test build --exclude java-backend
