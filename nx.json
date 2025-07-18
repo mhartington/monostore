@@ -131,10 +131,10 @@
           "production": "{currentDate|YYMM.DD}.{shortCommitSha}",
           "hotfix": "{currentDate|YYMM.DD}.{shortCommitSha}-hotfix"
         },
-        "preVersionCommand": "npx nx run-many -t docker:build -p java-backend",
+        "groupPreVersionCommand": "npx nx run-many -t docker:build -p java-backend",
         "ignoreVersionActions": ["java-backend"]
       },
-      "currentVersionResolver": "git-tag"
+      "currentVersionResolver": "none"
     },
     "changelog": {
       "projectChangelogs": true
