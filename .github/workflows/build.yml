@@ -34,4 +34,4 @@ jobs:
 
       - uses: nrwl/nx-set-shas@v4
 
-      - run: npx nx affected -t lint test build --exclude java-backend
+      - run: npx nx affected -t lint test build --exclude java-backend android-frontend
