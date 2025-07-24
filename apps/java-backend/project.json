@@ -3,10 +3,8 @@
   "root": "apps/java-backend",
   "projectType": "application",
   "release": {
-    "version": {
-      "docker": {
-        "repositoryName": "nrwlmike/sir-tusky"
-      }
+    "docker": {
+      "repositoryName": "nrwlmike/sir-tusky"
     }
   }
 }
